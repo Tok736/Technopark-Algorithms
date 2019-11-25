@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/kotik/Education/technoPark/Technopark-Algorithms/module2/Treap/main.cpp
+iostream
+-
+queue
+-
+cstdlib
+-
+
