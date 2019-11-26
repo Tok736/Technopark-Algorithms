@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/kotik/Education/technoPark/Technopark-Algorithms/module2/HashTable2/main.cpp
+cstdio
+-
+cstdlib
+-
+iostream
+-
+ctime
+-
+string
+-
+fstream
+-
+set
+-
+
