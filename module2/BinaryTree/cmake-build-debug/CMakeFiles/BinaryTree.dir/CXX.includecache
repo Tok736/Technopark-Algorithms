@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/kotik/Education/technoPark/Technopark-Algorithms/module2/BinaryTree/main.cpp
+iostream
+-
+string
+-
+cstdlib
+-
+ctime
+-
+

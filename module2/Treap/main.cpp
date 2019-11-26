@@ -60,19 +60,120 @@ public:
         return left > right;
     }
 };
-class IntComparatorOver {
+
+template <typename T>
+class ComparatorLess {
 public:
-    bool operator()(int left, int right) {
-        return left > right;
+    bool operator()(const T& left, const T& right) {
+        return left < right;
     }
 };
-class IntComparatorLess {
+
+class IntComparator {
 public:
     bool operator()(int left, int right) {
         return left < right;
     }
 };
 
+
+
+template <typename T, class Comp>
+class BinaryTree {
+public:
+    template <typename Tn>
+    class Node {
+    public:
+        Node(const Tn &value, Node * left, Node * right): value(value), left(left), right(right) {}
+        Tn value;
+        Node * left;
+        Node * right;
+    };
+
+
+    BinaryTree() {}
+    ~BinaryTree() {
+        Stack<Node<T>*> st;
+        Node<T> * temp = root;
+        while (!st.isEmpty() || temp != NULL) {
+            if (temp != NULL) {
+                st.push(temp);
+                temp = temp->left;
+            }
+            else {
+                temp = st.pop();
+                Node<T> * temp2 = temp;
+                temp = temp->right;
+                delete temp2;
+            }
+        }
+    }
+    void insert(const T& value) {
+        if (root == NULL) root = new Node<T>(value, NULL, NULL);
+        else {
+            Node<T> * temp = root;
+            bool isAdded = false;
+            while (!isAdded) {
+                if (temp->value <= value) {
+                    if (temp->right == NULL) {
+                        temp->right = new Node<T>(value, NULL, NULL);
+                        isAdded = true;
+                    }
+                    else temp = temp->right;
+                }
+                else {
+                    if (temp->left == NULL) {
+                        temp->left = new Node<T>(value, NULL, NULL);
+                        isAdded = true;
+                    }
+                    else temp = temp->left;
+                }
+            }
+        }
+        _len++;
+    }
+    void print_rec(Node<T> * temp) const {
+        if (temp != NULL) {
+            print_rec(temp->left);
+            cout << temp->value << "  ";
+            print_rec(temp->right);
+        }
+    }
+    void print() const {
+        Stack<Node<T>*> st;
+        Node<T> * temp = root;
+        while (!st.isEmpty() || temp != NULL) {
+            if (temp != NULL) {
+                st.push(temp);
+                temp = temp->left;
+            }
+            else {
+                temp = st.pop();
+                cout << temp->value << "  ";
+                temp = temp->right;
+            }
+        }
+    }
+    void heightRec(Node<T> * current, int &hmax, int h) const {
+        if (h > hmax) hmax = h;
+        if (current->left != nullptr) heightRec(current->left, hmax, h + 1);
+        if (current->right != nullptr) heightRec(current->right, hmax, h + 1);
+    }
+    int height() const {
+        if (root == nullptr) return 0;
+        int hmax = 0;
+        heightRec(root, hmax, 1);
+        return hmax;
+    }
+    size_t len() const {return _len; }
+    bool isEmpty() const {return _len == 0; }
+    Node<T> * getRoot() const { return root; }
+private:
+    Comp comp;
+    Node<T> * root = NULL;
+    size_t _len = 0;
+
+};
 
 template <typename X, typename Xcomp = ComparatorOver<X>, typename Y = int, typename Ycomp = ComparatorOver<Y>>
 class Treap {
@@ -92,7 +193,7 @@ private:
 
     size_t _size;
     Node<X, Y> * root;
-    int heightRec(Node<X, Y> * current, int &hmax, int h) const {
+    void heightRec(Node<X, Y> * current, int &hmax, int h) const {
         if (h > hmax) hmax = h;
         if (current->left != nullptr) heightRec(current->left, hmax, h + 1);
         if (current->right != nullptr) heightRec(current->right, hmax, h + 1);
@@ -102,7 +203,7 @@ private:
             left = nullptr;
             right = nullptr;
         }
-        else if (current->x < x) {
+        else if (xcomp(x, current->x)) {
             split(current->right, x, current->right, right);
             left = current;
         }
@@ -110,13 +211,12 @@ private:
             split(current->left, x, left, current->left);
             right = current;
         }
-
     }
     Node<X, Y> * merge(Node<X, Y> * left, Node<X, Y> right) {
         if (left == nullptr || right == 0) {
             return left == 0 ? right : left;
         }
-        if (left->y > right->y) {
+        if (ycomp(left->y, right->y)) {
             left->right = merge(left->right, right);
             return left;
         }
@@ -139,9 +239,9 @@ public:
         Node<X, Y> * current = root;
         Node<X, Y> * parent = nullptr;
 
-        while (current != nullptr && current->y >= y) {
+        while (current != nullptr && !ycomp(y, current->y)) {
             parent = current;
-            if (current->x >= x) {
+            if (!xcomp(x, current->x)) {
                 current = current->left;
                 isLeft = true;
             }
@@ -157,9 +257,6 @@ public:
         split(current, x, left, right);
 
         current = new Node<X, Y>(x, y, left, right);
-
-
-
 
         if (parent == nullptr) {
             root = current;
@@ -222,37 +319,36 @@ void print(int * arr, int N) {
 }
 void test1() {
     srand(time(nullptr));
-    Treap<int, IntComparatorOver> tr;
-    int N = 3;
+    Treap<int, ComparatorOver<int>> tr;
+    BinaryTree<int, IntComparator> bt;
+    int N = 16;
     int * arr = generateArr(N, 0, 100);
     print(arr, N);
     cout << "Treap word: " << endl;
     for (int i = 0; i < N; i++) {
         tr.insert(arr[i], rand() % 10000);
+        bt.insert(arr[i]);
     }
     cout << endl;
     tr.print();
-    cout << "Height: " << tr.height();
+    bt.print();
+    cout << endl;
+    cout << "Height: " << tr.height() << endl;
+    cout << "Height: " << bt.height() << endl;
 }
-void test2() {
-    Treap<int> tr;
-    Node<int, int> * ltree;
-    Node<int, int> * rtree;
-    for (int i = 0; i < 20; i++) {
-        tr.insert( rand() % 100, rand() % 1000);
+
+void mainTest() {
+    int N;
+    cin >> N;
+    Treap<int, ComparatorOver<int>> tr;
+    BinaryTree<int, IntComparator> bt;
+    int x, y;
+    for (int i = 0; i < N; i++) {
+        cin >> x >> y;
+        tr.insert(x, y);
+        bt.insert(x);
     }
-
-    tr.printRec(tr.getRoot());
-    cout << endl;
-
-    int k = 50;
-
-    tr.split(tr.getRoot(), k, ltree, rtree);
-    tr.printRec(ltree);
-    cout << endl;
-    tr.printRec(rtree);
-    cout << endl;
-    cout << "Success" << endl;
+    cout << bt.height() - tr.height() << endl;
 }
 
 
@@ -261,7 +357,7 @@ void test2() {
 
 int main() {
 
-    test1();
+    mainTest();
 
     return 0;
 }
