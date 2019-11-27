@@ -2,7 +2,7 @@
 #include <string>
 #include <cstdlib>
 #include <ctime>
-
+#include <queue>
 
 using namespace std;
 
@@ -11,9 +11,7 @@ using namespace std;
 template <typename T>
 class Stack {
 public:
-    Stack() {
-        buffer = new T[_capacity];
-    }
+    Stack();
     ~Stack() {
         delete[] buffer;
     }
@@ -54,6 +52,11 @@ private:
     T * buffer;
 
 };
+
+template<typename T>
+Stack<T>::Stack() {
+    buffer = new T[_capacity];
+}
 
 
 class IntComparator {
@@ -101,19 +104,19 @@ public:
             Node<T> * temp = root;
             bool isAdded = false;
             while (!isAdded) {
-                if (temp->value <= value) {
-                    if (temp->right == NULL) {
-                        temp->right = new Node<T>(value, NULL, NULL);
-                        isAdded = true;
-                    }
-                    else temp = temp->right;
-                }
-                else {
+                if (comp(value, temp->value)) {
                     if (temp->left == NULL) {
                         temp->left = new Node<T>(value, NULL, NULL);
                         isAdded = true;
                     }
                     else temp = temp->left;
+                }
+                else {
+                    if (temp->right == NULL) {
+                        temp->right = new Node<T>(value, NULL, NULL);
+                        isAdded = true;
+                    }
+                    else temp = temp->right;
                 }
             }
         }
@@ -141,6 +144,21 @@ public:
             }
         }
     }
+    void printLevel() const {
+        queue<Node<T>*> q;
+        q.push(root);
+        while (!q.empty()) {
+            Node<T> * temp = q.front();
+            q.pop();
+            cout << temp->value << "  ";
+            if (temp->left != nullptr) {
+                q.push(temp->left);
+            }
+            if (temp->right != nullptr) {
+                q.push(temp->right);
+            }
+        }
+    }
     size_t len() const {return _len; }
     bool isEmpty() const {return _len == 0; }
     Node<T> * getRoot() const { return root; }
@@ -161,7 +179,8 @@ void test1() {
         cin >> temp;
         bt.insert(temp);
     }
-    bt.print();
+    bt.printLevel();
+
 }
 
 void test2() {
@@ -191,7 +210,7 @@ void testStack() {
 
 int main() {
     srand(time(NULL));
-    test2();
+    test1();
 //    testStack();
     return 0;
 }
