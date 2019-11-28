@@ -40,6 +40,7 @@ private:
     };
     Node<T> * root;
     size_t _size;
+    Comp comp;
     void heightRec(Node<T> * current, int &hmax, int h) const {
         if (h > hmax) hmax = h;
         if (current->left != nullptr) heightRec(current->left, hmax, h + 1);
@@ -113,7 +114,6 @@ private:
         return temp;
     }
     Node<T> * rotateRight(Node<T> * temp) {
-//        PR("rR");
         int tAFac = abs(temp->factor);
 
         Node<T> ** base;
@@ -184,33 +184,9 @@ public:
                 st.pop();
                 Node<T> * temp2 = temp;
                 temp = temp->right;
-//                delete temp2;
+                delete temp2;
             }
         }
-    }
-    void insertNaive(const T& value) {
-        if (root == nullptr) root = new Node<T>(value, nullptr);
-        else {
-            Node<T> * temp = root;
-            bool isAdded = false;
-            while (!isAdded) {
-                if (temp->value <= value) {
-                    if (temp->right == nullptr) {
-                        temp->right = new Node<T>(value, temp);
-                        isAdded = true;
-                    }
-                    else temp = temp->right;
-                }
-                else {
-                    if (temp->left == nullptr) {
-                        temp->left = new Node<T>(value, temp);
-                        isAdded = true;
-                    }
-                    else temp = temp->left;
-                }
-            }
-        }
-        _size++;
     }
     void insert(const T& value) {
         if (root == nullptr) root = new Node<T>(value, nullptr);
@@ -218,7 +194,7 @@ public:
             Node<T> * temp = root;
             bool isAdded = false;
             while (!isAdded) {
-                if (temp->value <= value) {
+                if (!comp(temp->value, value)) {
                     if (temp->right == nullptr) {
                         temp->right = new Node<T>(value, temp);
                         temp = temp->right;
@@ -335,7 +311,7 @@ public:
             Node<T> * temp = root;
             while (true) {
                 if (temp->value == value) return temp;
-                if (temp->value <= value) {
+                if (!comp(value, temp->value)) {
                     if (temp->right == nullptr) {
                         return nullptr;
                     }
@@ -495,7 +471,7 @@ int randint(int down, int up) {
 
 void test1() {
     AvlTree<int, ComparatorOver<int>> at;
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 100; i++) {
         at.insert(randint(0, 30));
     }
     at.printTree();
@@ -515,8 +491,8 @@ void test2() {
 }
 
 void test3() {
-    AvlTree<int, ComparatorOver<int>> at;
-    const int N = 9;
+    AvlTree<int, ComparatorLess<int>> at;
+    const int N = 16;
     for (int i = 0; i < N; i++) {
         at.insert(i);
     }
@@ -534,8 +510,8 @@ void mainTest() {
         cin >> f >> s;
         switch (f) {
             case 1:
-                at.insert(-s);
-                cout << at.kStatistic(-s) << endl;
+                at.insert(s);
+                cout << at.kStatistic(s) << endl;
                 break;
             case 2:
                 at.popByK(s);
@@ -546,6 +522,7 @@ void mainTest() {
 
 int main() {
     srand(time(nullptr));
-    mainTest();
+//    mainTest();
+    test1();
     return 0;
 }
