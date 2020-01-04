@@ -74,7 +74,7 @@ private:
     size_t nodeHeight(Node<T> * current) const {
         return (current != nullptr) ? current->height : 0;
     }
-    int bFactor(Node<T> * current) const {
+    int factor(Node<T> * current) const {
         return nodeHeight(current->right) - nodeHeight(current->left);
     }
     void fixHeight(Node<T> * current) {
@@ -85,15 +85,15 @@ private:
     Node<T> * balance(Node<T> * current)
     {
         fixHeight(current);
-        if( bFactor(current)==2 )
+        if( factor(current)==2 )
         {
-            if( bFactor(current->right) < 0 )
+            if( factor(current->right) < 0 )
                 current->right = rotateRight(current->right);
             return rotateLeft(current);
         }
-        if( bFactor(current)==-2 )
+        if( factor(current)==-2 )
         {
-            if( bFactor(current->left) > 0  )
+            if( factor(current->left) > 0  )
                 current->left = rotateLeft(current->left);
             return rotateRight(current);
         }
@@ -373,6 +373,8 @@ void mainTest() {
 
 int main() {
     srand(time(nullptr));
-    mainTest();
+//    mainTest();
+    test2();
     return 0;
+
 }
