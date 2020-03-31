@@ -58,6 +58,7 @@ void contestTest() {
         std::cin >> arr[i];
     }
     std::cout << findMaximum(arr, n);
+    delete[] arr;
 }
 
 
